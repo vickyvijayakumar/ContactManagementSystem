@@ -1,0 +1,101 @@
+import json
+
+class Contact:
+    def __init__(self, name, phone, email):
+        self.name = name
+        self.phone = phone
+        self.email = email
+
+class ContactManager:
+    def __init__(self):
+        self.contacts = []
+
+    def add_contact(self, name, phone, email):
+        contact = Contact(name, phone, email)
+        self.contacts.append(contact)
+
+    def view_contacts(self):
+        if not self.contacts:
+            print("No contacts available.")
+        else:
+            for i, contact in enumerate(self.contacts):
+                print(f"Contact {i+1}:")
+                print(f"Name: {contact.name}")
+                print(f"Phone: {contact.phone}")
+                print(f"Email: {contact.email}")
+                print()
+
+    def edit_contact(self, index, name=None, phone=None, email=None):
+        if index < 1 or index > len(self.contacts):
+            print("Invalid contact index.")
+            return
+
+        contact = self.contacts[index - 1]
+        if name:
+            contact.name = name
+        if phone:
+            contact.phone = phone
+        if email:
+            contact.email = email
+
+    def delete_contact(self, index):
+        if index < 1 or index > len(self.contacts):
+            print("Invalid contact index.")
+            return
+
+        del self.contacts[index - 1]
+
+    def save_contacts(self, filename):
+        with open(filename, 'w') as file:
+            json.dump([vars(contact) for contact in self.contacts], file)
+
+    def load_contacts(self, filename):
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            self.contacts = [Contact(**contact) for contact in data]
+
+def main():
+    contact_manager = ContactManager()
+
+    while True:
+        print("\nContact Management System")
+        print("a. Add Contact")
+        print("b. View Contacts")
+        print("c. Edit Contact")
+        print("d. Delete Contact")
+        print("e. Save Contacts")
+        print("f. Load Contacts")
+        print("g. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == 'a':
+            name = input("Enter name: ")
+            phone = input("Enter phone number: ")
+            email = input("Enter email address: ")
+            contact_manager.add_contact(name, phone, email)
+        elif choice == 'b':
+            contact_manager.view_contacts()
+        elif choice == 'c':
+            index = int(input("Enter index of contact to edit: "))
+            name = input("Enter new name (leave blank to keep current): ")
+            phone = input("Enter new phone number (leave blank to keep current): ")
+            email = input("Enter new email address (leave blank to keep current): ")
+            contact_manager.edit_contact(index, name, phone, email)
+        elif choice == 'd':
+            index = int(input("Enter index of contact to delete: "))
+            contact_manager.delete_contact(index)
+        elif choice == 'e':
+            filename = input("Enter filename to save contacts: ")
+            contact_manager.save_contacts(filename)
+        elif choice == 'f':
+            filename = input("Enter filename to load contacts: ")
+            contact_manager.load_contacts(filename)
+        elif choice == 'g':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
